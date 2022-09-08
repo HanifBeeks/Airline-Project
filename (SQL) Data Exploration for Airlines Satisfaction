@@ -1,0 +1,29 @@
+Select *
+from `airlines_sat.ar_sat`;
+
+
+/* Percentage of airline passengers that are either satisfied or dissatisfied */
+select Satisfaction, Round(count(*) * 100.0 / sum(count(satisfaction)) over()) as percentageofsatisfaction
+from `airlines_sat.ar_sat`
+Group by Satisfaction;
+
+
+/*Percentage of airline passengers that are either satisfied or dissatisfied based on Travel Type*/
+select Type_of_Travel,Satisfaction, Round(count(*) * 100.0 / sum(count(satisfaction)) over(partition by Type_of_Travel)) as percentageofsatisfaction
+from `airlines_sat.ar_sat`
+Group by Satisfaction, Type_of_Travel
+ORDER BY percentageofsatisfaction desc;
+
+
+/*Percentage of airline passengers that are either satisfied or dissatisfied based on Travel Type AND Customer-Type (First_time or Repeating)*/
+ select Customer_type, Type_of_Travel,Satisfaction, Round(count(*) * 100.0 / sum(count(satisfaction)) over(partition by Customer_Type)) as percentageofsatisfaction
+from `airlines_sat.ar_sat`
+Group by Customer_Type, Type_of_Travel, Satisfaction
+ORDER BY percentageofsatisfaction desc;
+
+/* Customer profile for a repeating passenger*/
+
+SELECT Type_of_Travel, Class, Round(AVG(Flight_Distance)) as avg_flight_distance, Round(AVG(Age)) as avg_age
+FROM `airlines_sat.ar_sat`
+Where customer_type = 'Returning'
+GROUP BY Type_of_Travel, Class
